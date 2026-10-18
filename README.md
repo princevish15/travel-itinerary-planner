@@ -23,6 +23,8 @@ User -> Frontend (React + Vite, Vercel) <-> Backend (FastAPI, Render)
 - Edit costs, remove activities, and **regenerate a single day** with an optional instruction
 - Live budget tracker with over-budget warning
 - Print / save as PDF
+- Google Maps links per place and a multi-stop route for each day
+- Read-only share link for a trip (run `supabase/share.sql` once in the SQL editor)
 
 ## Project structure
 

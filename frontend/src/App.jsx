@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NewTrip from "./pages/NewTrip";
 import TripView from "./pages/TripView";
+import SharedTrip from "./pages/SharedTrip";
 
 function Shell({ session, children }) {
   const navigate = useNavigate();
@@ -64,6 +65,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
+      <Route path="/share/:token" element={<SharedTrip />} />
       <Route path="/" element={guard(<Dashboard />)} />
       <Route path="/new" element={guard(<NewTrip />)} />
       <Route path="/trip/:id" element={guard(<TripView />)} />

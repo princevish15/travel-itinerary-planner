@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { regenerateDay } from "../lib/api";
-import { fmtDate, fmtMoney, fmtRange } from "../lib/format";
+import { dayRouteUrl, fmtDate, fmtMoney, fmtRange, placeUrl } from "../lib/format";
 
 const TYPE_LABEL = {
   attraction: "Sightseeing",
@@ -31,6 +31,7 @@ export default function TripView() {
   const [busyDay, setBusyDay] = useState(null);
   const [instruction, setInstruction] = useState("");
   const [saving, setSaving] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     supabase
@@ -96,6 +97,25 @@ export default function TripView() {
     setBusyDay(null);
   };
 
+  const shareUrl = trip?.share_token ? `${window.location.origin}/share/${trip.share_token}` : "";
+
+  const toggleShare = async () => {
+    const share_token = trip.share_token ? null : crypto.randomUUID();
+    const { error } = await supabase.from("trips").update({ share_token }).eq("id", id);
+    if (error) return setError(`${error.message} (run supabase/share.sql in Supabase first)`);
+    setTrip((t) => ({ ...t, share_token }));
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      prompt("Copy this link:", shareUrl);
+    }
+  };
+
   const removeTrip = async () => {
     if (!confirm("Delete this trip?")) return;
     await supabase.from("trips").delete().eq("id", id);
@@ -148,6 +168,11 @@ export default function TripView() {
                 {fmtDate(day.date)} · {fmtMoney(day.estimated_cost, it.currency)}
               </p>
             </div>
+            {dayRouteUrl(day, trip.destination) && (
+              <a className="btn btn-ghost btn-sm" href={dayRouteUrl(day, trip.destination)} target="_blank" rel="noreferrer">
+                View day route on map
+              </a>
+            )}
           </div>
 
           <div className="timeline">
@@ -164,6 +189,14 @@ export default function TripView() {
                   <p className="muted small">
                     {a.location}
                     {a.duration_minutes ? ` · ${a.duration_minutes} min` : ""}
+                    {a.location && (
+                      <>
+                        {" · "}
+                        <a href={placeUrl(a, trip.destination)} target="_blank" rel="noreferrer">
+                          Map
+                        </a>
+                      </>
+                    )}
                   </p>
                   <div className="act-foot">
                     <label className="cost">
@@ -229,6 +262,28 @@ export default function TripView() {
               </ul>
             </div>
           )}
+
+          <div className="card side">
+            <h3>Share trip</h3>
+            {trip.share_token ? (
+              <>
+                <input readOnly value={shareUrl} onFocus={(e) => e.target.select()} />
+                <p className="muted small">Anyone with this link can view (not edit) this trip.</p>
+                <div className="side-actions">
+                  <button className="btn btn-primary btn-sm" onClick={copyLink}>
+                    {copied ? "Copied!" : "Copy link"}
+                  </button>
+                  <button className="btn btn-ghost btn-sm" onClick={toggleShare}>
+                    Stop sharing
+                  </button>
+                </div>
+              </>
+            ) : (
+              <button className="btn btn-ghost btn-sm" onClick={toggleShare}>
+                Create share link
+              </button>
+            )}
+          </div>
 
           <div className="side-actions">
             <button className="btn btn-ghost btn-sm" onClick={() => window.print()}>
