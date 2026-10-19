@@ -109,3 +109,20 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #c7c4f8; border-c
   .topbar, .tabs, .regen, .side-actions, .act-foot .btn, .hero .back { display: none !important; }
   body { background: #fff; }
 }
+
+/* explore */
+.explore-hero { margin: -24px -20px 28px; min-height: 340px; display: flex; align-items: flex-end; background: linear-gradient(135deg, #0ea5e9, #6366f1 60%, #f97316) center/cover; border-radius: 0 0 24px 24px; position: relative; overflow: hidden; }
+.explore-hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,14,30,.75), rgba(10,14,30,.15)); }
+.explore-hero-in { position: relative; color: #fff; padding: 32px 28px; max-width: 700px; }
+.explore-hero h1 { font-size: 2.6rem; margin-bottom: 8px; }
+.explore-hero p { opacity: .95; font-size: 1.05rem; }
+.hero-search { display: flex; gap: 8px; margin-top: 18px; background: #fff; padding: 6px; border-radius: 14px; }
+.hero-search input { border: 0; outline: 0; flex: 1; } .hero-search input:focus { outline: 0; }
+.dest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+.dest { position: relative; height: 280px; border-radius: var(--radius); overflow: hidden; display: flex; align-items: flex-end; color: #fff; background: linear-gradient(135deg, #6366f1, #a855f7) center/cover; transition: transform .2s, box-shadow .2s; }
+.dest::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,14,30,.8), transparent 60%); }
+.dest:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(16,24,40,.2); }
+.dest-info { position: relative; padding: 16px; } .dest-info h3 { font-size: 1.35rem; margin: 2px 0; } .dest-info p { opacity: .9; font-size: .9rem; }
+.dest-region { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; background: rgba(255,255,255,.22); padding: 2px 9px; border-radius: 999px; }
+.form-banner { height: 170px; border-radius: 12px; margin: -6px -6px 4px; display: flex; align-items: flex-end; padding: 14px 18px; color: #fff; font-size: 1.6rem; font-weight: 700; background: linear-gradient(135deg, #6366f1, #a855f7) center/cover; text-shadow: 0 2px 8px rgba(0,0,0,.5); }
+@media (max-width: 860px) { .explore-hero h1 { font-size: 2rem; } .explore-hero { min-height: 300px; } }

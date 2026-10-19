@@ -136,7 +136,7 @@ export default function TripView() {
         className="hero"
         style={trip.cover_image ? { backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url(${trip.cover_image})` } : undefined}
       >
-        <Link to="/" className="back">
+        <Link to="/trips" className="back">
           ← My trips
         </Link>
         <h1>{it.title}</h1>

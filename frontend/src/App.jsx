@@ -3,6 +3,7 @@ import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Explore from "./pages/Explore";
 import NewTrip from "./pages/NewTrip";
 import TripView from "./pages/TripView";
 import SharedTrip from "./pages/SharedTrip";
@@ -20,7 +21,8 @@ function Shell({ session, children }) {
           <span className="brand-mark">W</span> Wayfarer
         </Link>
         <nav>
-          <Link to="/">My trips</Link>
+          <Link to="/">Explore</Link>
+          <Link to="/trips">My trips</Link>
           <Link to="/new" className="btn btn-primary btn-sm">
             + New trip
           </Link>
@@ -66,7 +68,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
       <Route path="/share/:token" element={<SharedTrip />} />
-      <Route path="/" element={guard(<Dashboard />)} />
+      <Route path="/" element={guard(<Explore />)} />
+      <Route path="/trips" element={guard(<Dashboard />)} />
       <Route path="/new" element={guard(<NewTrip />)} />
       <Route path="/trip/:id" element={guard(<TripView />)} />
       <Route path="*" element={<Navigate to="/" replace />} />

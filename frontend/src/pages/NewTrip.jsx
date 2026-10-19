@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { generateItinerary } from "../lib/api";
+import { DESTINATIONS, useWikiImage } from "../lib/destinations";
+
+const CURRENCIES = ["INR", "USD", "EUR", "GBP", "AED", "SGD", "JPY"];
 
 const INTERESTS = [
   "Food",
@@ -24,12 +27,15 @@ const today = new Date().toISOString().slice(0, 10);
 
 export default function NewTrip() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const known = DESTINATIONS.find((d) => d.query === params.get("dest"));
+  const photo = useWikiImage(known?.wiki, 1400);
   const [f, setF] = useState({
-    destination: "",
+    destination: params.get("dest") || "",
     start_date: today,
     end_date: today,
-    budget: 20000,
-    currency: "INR",
+    budget: Number(params.get("budget")) || 20000,
+    currency: CURRENCIES.includes(params.get("cur")) ? params.get("cur") : "INR",
     travelers: 1,
     trip_type: "solo",
     interests: ["Food", "Sightseeing"],
@@ -79,8 +85,22 @@ export default function NewTrip() {
 
   return (
     <form className="card form" onSubmit={submit}>
-      <h1>Plan a new trip</h1>
+      {known && (
+        <div className="form-banner" style={photo ? { backgroundImage: `url(${photo})` } : undefined}>
+          <span>{known.name}</span>
+        </div>
+      )}
+      <h1>{known ? `Plan your ${known.name} trip` : "Plan a new trip"}</h1>
       <p className="muted">The more you tell us, the more personal the itinerary.</p>
+      {!known && (
+        <div className="chips">
+          {DESTINATIONS.slice(0, 8).map((d) => (
+            <button type="button" key={d.name} className="chip" onClick={() => set("destination", d.query)}>
+              {d.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="row">
         <label className="grow">
@@ -113,7 +133,7 @@ export default function NewTrip() {
         <label>
           Currency
           <select value={f.currency} onChange={(e) => set("currency", e.target.value)}>
-            {["INR", "USD", "EUR", "GBP", "AED", "SGD", "JPY"].map((c) => (
+            {CURRENCIES.map((c) => (
               <option key={c}>{c}</option>
             ))}
           </select>
