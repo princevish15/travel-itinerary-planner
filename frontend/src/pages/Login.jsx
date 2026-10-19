@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
+import { useWikiImage } from "../lib/destinations";
 import PasswordInput from "../components/PasswordInput";
 
 export default function Login() {
@@ -9,6 +10,7 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const bg = useWikiImage("Santorini", 1280);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -29,7 +31,7 @@ export default function Login() {
   };
 
   return (
-    <div className="login-wrap">
+    <div className="login-wrap" style={bg ? { "--login-bg": `url(${bg})` } : undefined}>
       <div className="login-hero">
         <div className="brand big">
           <span className="brand-mark">W</span> Wayfarer

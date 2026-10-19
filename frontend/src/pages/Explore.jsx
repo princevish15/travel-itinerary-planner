@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DESTINATIONS, useWikiImage } from "../lib/destinations";
 
@@ -18,6 +18,31 @@ function DestCard({ d }) {
     </Link>
   );
 }
+
+const SLIDES = [
+  { wiki: "Oia,_Greece", place: "Santorini, Greece", quote: "The world is a book, and those who do not travel read only one page." },
+  { wiki: "Hawa_Mahal", place: "Jaipur, India", quote: "Not all those who wander are lost." },
+  { wiki: "Alleppey", place: "Kerala, India", quote: "Travel is the only thing you buy that makes you richer." },
+  { wiki: "Pangong_Tso", place: "Ladakh, India", quote: "Take only memories, leave only footprints." },
+  { wiki: "Uluwatu_Temple", place: "Bali, Indonesia", quote: "Once a year, go someplace you've never been before." },
+];
+
+function Slide({ s, on }) {
+  const img = useWikiImage(s.wiki, 1280);
+  return <div className={`slide ${on ? "on" : ""}`} style={img ? { backgroundImage: `url(${img})` } : undefined} />;
+}
+
+const STEPS = [
+  { icon: "📍", t: "Pick a place", d: "Choose a destination from the list or search any city in the world." },
+  { icon: "🎒", t: "Tell us your style", d: "Dates, budget, who is travelling, what you love: food, adventure, culture." },
+  { icon: "🗺️", t: "Get your plan", d: "A day-by-day itinerary with costs, photos and Google Maps links. Edit any day." },
+];
+
+const QUOTES = [
+  { q: "Travel makes one modest. You see what a tiny place you occupy in the world.", a: "Gustave Flaubert" },
+  { q: "To travel is to live.", a: "Hans Christian Andersen" },
+  { q: "The journey, not the arrival, matters.", a: "T. S. Eliot" },
+];
 
 const LIMIT = 6;
 
@@ -48,7 +73,11 @@ export default function Explore() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [region, setRegion] = useState("All");
-  const heroImg = useWikiImage("Oia,_Greece", 1280);
+  const [slide, setSlide] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setSlide((x) => (x + 1) % SLIDES.length), 5000);
+    return () => clearInterval(t);
+  }, []);
 
   const go = (e) => {
     e.preventDefault();
@@ -59,15 +88,39 @@ export default function Explore() {
 
   return (
     <>
-      <section className="explore-hero" style={heroImg ? { backgroundImage: `url(${heroImg})` } : undefined}>
+      <section className="explore-hero">
+        {SLIDES.map((sl, i) => (
+          <Slide key={sl.wiki} s={sl} on={i === slide} />
+        ))}
         <div className="explore-hero-in">
           <h1>Where to next?</h1>
           <p>Pick a place, tell us your style, and get a day-by-day plan with photos, costs and map links.</p>
+          <blockquote className="hero-quote" key={slide}>
+            "{SLIDES[slide].quote}"
+            <cite>{SLIDES[slide].place}</cite>
+          </blockquote>
           <form className="hero-search" onSubmit={go}>
             <input placeholder="Search any city or country..." value={q} onChange={(e) => setQ(e.target.value)} />
             <button className="btn btn-primary">Plan trip</button>
           </form>
+          <div className="dots">
+            {SLIDES.map((_, i) => (
+              <button key={i} aria-label={`Slide ${i + 1}`} className={i === slide ? "on" : ""} onClick={() => setSlide(i)} />
+            ))}
+          </div>
         </div>
+      </section>
+
+      <section className="steps">
+        {STEPS.map((st, i) => (
+          <div className="card step" key={st.t}>
+            <span className="step-icon">{st.icon}</span>
+            <h3>
+              {i + 1}. {st.t}
+            </h3>
+            <p className="muted">{st.d}</p>
+          </div>
+        ))}
       </section>
 
       <div className="page-head">
@@ -87,6 +140,15 @@ export default function Explore() {
       {sections.map((r) => (
         <Section key={r} region={r} />
       ))}
+
+      <section className="quotes">
+        {QUOTES.map((x) => (
+          <figure key={x.a}>
+            <blockquote>"{x.q}"</blockquote>
+            <figcaption>{x.a}</figcaption>
+          </figure>
+        ))}
+      </section>
     </>
   );
 }

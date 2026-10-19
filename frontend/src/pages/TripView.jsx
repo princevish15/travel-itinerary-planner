@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { regenerateDay } from "../lib/api";
+import ActImage from "../components/ActImage";
+import { useDestImage } from "../lib/destinations";
 import { dayRouteUrl, fmtDate, fmtMoney, fmtRange, placeUrl } from "../lib/format";
 
 const TYPE_LABEL = {
@@ -26,6 +28,8 @@ export default function TripView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [trip, setTrip] = useState(null);
+  const wikiHero = useDestImage(trip?.destination, 1280);
+  const heroImg = trip?.cover_image || wikiHero;
   const [activeDay, setActiveDay] = useState(1);
   const [error, setError] = useState("");
   const [busyDay, setBusyDay] = useState(null);
@@ -134,7 +138,7 @@ export default function TripView() {
     <>
       <div
         className="hero"
-        style={trip.cover_image ? { backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url(${trip.cover_image})` } : undefined}
+        style={heroImg ? { backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url(${heroImg})` } : undefined}
       >
         <Link to="/trips" className="back">
           ← My trips
@@ -178,7 +182,7 @@ export default function TripView() {
           <div className="timeline">
             {day.activities.map((a, i) => (
               <div className="act card" key={`${day.day}-${i}-${a.title}`}>
-                {a.image_url && <img src={a.image_url} alt={a.title} loading="lazy" />}
+                <ActImage a={a} />
                 <div className="act-body">
                   <div className="act-top">
                     <span className="time">{a.time}</span>

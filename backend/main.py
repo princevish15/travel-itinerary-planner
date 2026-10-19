@@ -10,6 +10,7 @@ The token is verified against Supabase Auth. Trips are saved by the frontend
 directly to Supabase (protected by Row Level Security).
 """
 import json
+import asyncio
 import os
 from datetime import date
 from typing import List, Optional
@@ -187,18 +188,41 @@ async def fetch_image(client: httpx.AsyncClient, query: str) -> Optional[str]:
     return None
 
 
+_image_cache: dict = {}
+MAX_TRIP_PHOTOS = 8  # keeps one trip well under Unsplash's 50 requests/hour demo limit
+MAX_DAY_PHOTOS = 3
+
+
+async def cached_image(client: httpx.AsyncClient, query: str) -> Optional[str]:
+    key = query.strip().lower()
+    if key in _image_cache:
+        return _image_cache[key]
+    url = await fetch_image(client, query)
+    if url:  # don't cache failures, so a later attempt can still succeed
+        _image_cache[key] = url
+    return url
+
+
 async def attach_images(destination: str, itinerary: dict, only_day: Optional[int] = None) -> None:
-    """Attach an image URL to the trip cover and to attraction/experience activities."""
+    """Attach photos to the trip cover and a limited number of sightseeing/experience activities."""
+    limit = MAX_DAY_PHOTOS if only_day is not None else MAX_TRIP_PHOTOS
+    targets = []
+    for day in itinerary.get("days", []):
+        if only_day is not None and day.get("day") != only_day:
+            continue
+        for act in day.get("activities", []):
+            act.pop("image_url", None)
+            if act.get("type") in ("attraction", "experience") and len(targets) < limit:
+                targets.append(act)
     async with httpx.AsyncClient(timeout=10) as client:
+        jobs = [cached_image(client, a.get("image_query") or f"{a.get('title', '')} {destination}") for a in targets]
         if only_day is None:
-            itinerary["cover_image"] = await fetch_image(client, f"{destination} travel")
-        for day in itinerary.get("days", []):
-            if only_day is not None and day.get("day") != only_day:
-                continue
-            for act in day.get("activities", []):
-                if act.get("type") in ("attraction", "experience", "food"):
-                    q = act.get("image_query") or f"{act.get('title', '')} {destination}"
-                    act["image_url"] = await fetch_image(client, q)
+            jobs.append(cached_image(client, f"{destination} travel"))
+        results = await asyncio.gather(*jobs)
+    for act, url in zip(targets, results):
+        act["image_url"] = url
+    if only_day is None:
+        itinerary["cover_image"] = results[-1]
 
 
 def normalise(itinerary: dict, p: TripPreferences) -> dict:

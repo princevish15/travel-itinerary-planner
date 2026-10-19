@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import ActImage from "../components/ActImage";
+import { useDestImage } from "../lib/destinations";
 import { dayRouteUrl, fmtDate, fmtMoney, fmtRange, placeUrl } from "../lib/format";
 
 const TYPE_LABEL = {
@@ -14,6 +16,8 @@ const TYPE_LABEL = {
 export default function SharedTrip() {
   const { token } = useParams();
   const [trip, setTrip] = useState(null);
+  const wikiHero = useDestImage(trip?.destination, 1280);
+  const heroImg = trip?.cover_image || wikiHero;
   const [activeDay, setActiveDay] = useState(1);
   const [error, setError] = useState("");
 
@@ -48,7 +52,7 @@ export default function SharedTrip() {
       <main className="container">
         <div
           className="hero"
-          style={trip.cover_image ? { backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url(${trip.cover_image})` } : undefined}
+          style={heroImg ? { backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url(${heroImg})` } : undefined}
         >
           <h1>{it.title}</h1>
           <p>
@@ -85,7 +89,7 @@ export default function SharedTrip() {
             <div className="timeline">
               {day.activities.map((a, i) => (
                 <div className="act card" key={`${day.day}-${i}-${a.title}`}>
-                  {a.image_url && <img src={a.image_url} alt={a.title} loading="lazy" />}
+                  <ActImage a={a} />
                   <div className="act-body">
                     <div className="act-top">
                       <span className="time">{a.time}</span>

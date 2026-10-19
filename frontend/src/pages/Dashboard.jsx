@@ -2,6 +2,17 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { fmtMoney, fmtRange } from "../lib/format";
+import { useDestImage } from "../lib/destinations";
+
+function Cover({ t }) {
+  const wiki = useDestImage(t.destination, 500);
+  const img = t.cover_image || wiki;
+  return (
+    <div className="trip-cover" style={img ? { backgroundImage: `url(${img})` } : undefined}>
+      {!img && <span>{t.destination[0]}</span>}
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const [trips, setTrips] = useState(null);
@@ -76,12 +87,7 @@ export default function Dashboard() {
         {trips?.map((t) => (
           <div className="card trip-card" key={t.id}>
             <Link to={`/trip/${t.id}`}>
-              <div
-                className="trip-cover"
-                style={t.cover_image ? { backgroundImage: `url(${t.cover_image})` } : undefined}
-              >
-                {!t.cover_image && <span>{t.destination[0]}</span>}
-              </div>
+              <Cover t={t} />
               <div className="trip-body">
                 <h3>{t.title}</h3>
                 <p className="muted">{t.destination}</p>

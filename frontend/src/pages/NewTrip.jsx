@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { generateItinerary } from "../lib/api";
-import { DESTINATIONS, useWikiImage } from "../lib/destinations";
+import { DESTINATIONS, useDestImage, useWikiImage } from "../lib/destinations";
 
+const LOADING_TIPS = [
+  "Picking the best sights for your interests...",
+  "Finding local food worth the queue...",
+  "Balancing the plan with your budget...",
+  "Lining up stays and transport...",
+  "Adding map links for every stop...",
+];
 const CURRENCIES = ["INR", "USD", "EUR", "GBP", "AED", "SGD", "JPY"];
 
 const INTERESTS = [
@@ -44,6 +51,13 @@ export default function NewTrip() {
     notes: "",
   });
   const [busy, setBusy] = useState(false);
+  const loadPhoto = useDestImage(busy ? f.destination : "", 1280);
+  const [tip, setTip] = useState(0);
+  useEffect(() => {
+    if (!busy) return;
+    const t = setInterval(() => setTip((x) => (x + 1) % LOADING_TIPS.length), 2500);
+    return () => clearInterval(t);
+  }, [busy]);
   const [error, setError] = useState("");
 
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
@@ -85,6 +99,15 @@ export default function NewTrip() {
 
   return (
     <form className="card form" onSubmit={submit}>
+      {busy && (
+        <div className="gen-overlay" style={loadPhoto ? { backgroundImage: `url(${loadPhoto})` } : undefined}>
+          <div className="gen-box">
+            <div className="spinner" />
+            <h2>Crafting your {f.destination.split(",")[0]} trip</h2>
+            <p>{LOADING_TIPS[tip]}</p>
+          </div>
+        </div>
+      )}
       {known && (
         <div className="form-banner" style={photo ? { backgroundImage: `url(${photo})` } : undefined}>
           <span>{known.name}</span>

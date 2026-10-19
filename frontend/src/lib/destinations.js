@@ -37,20 +37,46 @@ const cache = new Map();
 export function useWikiImage(title, width = 960) {
   const [src, setSrc] = useState(cache.get(title) ?? null);
   useEffect(() => {
-    if (!title || cache.has(title)) return;
+    if (!title) return;
+    if (cache.has(title)) {
+      setSrc(cache.get(title));
+      return;
+    }
     let live = true;
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${title}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        const thumb = d?.thumbnail?.source;
-        const url = thumb ? thumb.replace(/\/\d+px-/, `/${width}px-`) : null;
+    const bySummary = () =>
+      fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${title}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          const thumb = d?.thumbnail?.source;
+          return thumb ? thumb.replace(/\/\d+px-/, `/${width}px-`) : null;
+        });
+    // Fallback for free-text places with no exact page: search Wikipedia and take the top result's photo.
+    const bySearch = () =>
+      fetch(
+        `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(
+          title.replace(/_/g, " ")
+        )}&gsrlimit=1&prop=pageimages&pithumbsize=${width}&format=json&origin=*`
+      )
+        .then((r) => r.json())
+        .then((d) => Object.values(d?.query?.pages || {})[0]?.thumbnail?.source || null);
+    bySummary()
+      .catch(() => null)
+      .then((url) => url || bySearch().catch(() => null))
+      .then((url) => {
         cache.set(title, url);
         if (live) setSrc(url);
-      })
-      .catch(() => {});
+      });
     return () => {
       live = false;
     };
   }, [title, width]);
   return src;
+}
+
+// Photo for any free-text destination ("Goa, India", "Hampi"): known list first, else Wikipedia page of the first word group.
+export function useDestImage(destination, width = 960) {
+  const first = (destination || "").split(",")[0].trim();
+  const known = DESTINATIONS.find((d) => d.query === destination || d.name.toLowerCase() === first.toLowerCase());
+  const title = known ? known.wiki : first.replace(/\s+/g, "_");
+  return useWikiImage(title, width);
 }
