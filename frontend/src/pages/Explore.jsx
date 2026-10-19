@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { MapPin, Search } from "lucide-react";
 import { DESTINATIONS, useWikiImage } from "../lib/destinations";
 
 function DestCard({ d }) {
   const img = useWikiImage(d.wiki, 960);
   return (
+    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4 }}>
     <Link
       className="dest"
       to={`/new?dest=${encodeURIComponent(d.query)}&cur=${d.currency}&budget=${d.budget}`}
       style={img ? { backgroundImage: `url(${img})` } : undefined}
     >
       <div className="dest-info">
-        <span className="dest-region">{d.region}</span>
+        <span className="dest-region">
+          <MapPin size={11} /> {d.region}
+        </span>
         <h3>{d.name}</h3>
         <p>{d.tag}</p>
       </div>
     </Link>
+    </motion.div>
   );
 }
 
@@ -101,7 +107,9 @@ export default function Explore() {
           </blockquote>
           <form className="hero-search" onSubmit={go}>
             <input placeholder="Search any city or country..." value={q} onChange={(e) => setQ(e.target.value)} />
-            <button className="btn btn-primary">Plan trip</button>
+            <button className="btn btn-primary">
+              <Search size={16} /> Plan trip
+            </button>
           </form>
           <div className="dots">
             {SLIDES.map((_, i) => (
@@ -114,7 +122,9 @@ export default function Explore() {
       <section className="steps">
         {STEPS.map((st, i) => (
           <div className="card step" key={st.t}>
-            <span className="step-icon">{st.icon}</span>
+            <motion.span className="step-icon" initial={{ scale: 0.6, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }}>
+              {st.icon}
+            </motion.span>
             <h3>
               {i + 1}. {st.t}
             </h3>

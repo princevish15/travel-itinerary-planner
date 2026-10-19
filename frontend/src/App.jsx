@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Compass, Luggage, Plus } from "lucide-react";
 import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { supabase, supabaseConfigured } from "./lib/supabase";
 import Login from "./pages/Login";
@@ -22,10 +23,14 @@ function Shell({ session, children }) {
           <span className="brand-mark">W</span> Wayfarer
         </Link>
         <nav>
-          <Link to="/">Explore</Link>
-          <Link to="/trips">My trips</Link>
+          <Link to="/" className="navlink">
+            <Compass size={16} /> Explore
+          </Link>
+          <Link to="/trips" className="navlink">
+            <Luggage size={16} /> My trips
+          </Link>
           <Link to="/new" className="btn btn-primary btn-sm">
-            + New trip
+            <Plus size={14} /> New trip
           </Link>
           <span className="muted email">{session.user.email}</span>
           <button className="btn btn-ghost btn-sm" onClick={signOut}>

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Clock, Copy, MapPin, Printer, RefreshCw, Share2, Trash2 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { regenerateDay } from "../lib/api";
@@ -141,7 +143,7 @@ export default function TripView() {
         style={heroImg ? { backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url(${heroImg})` } : undefined}
       >
         <Link to="/trips" className="back">
-          ← My trips
+          <ArrowLeft size={14} /> My trips
         </Link>
         <h1>{it.title}</h1>
         <p>
@@ -181,11 +183,19 @@ export default function TripView() {
 
           <div className="timeline">
             {day.activities.map((a, i) => (
-              <div className="act card" key={`${day.day}-${i}-${a.title}`}>
+              <motion.div
+                className="act card"
+                key={`${day.day}-${i}-${a.title}`}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: i * 0.06 }}
+              >
                 <ActImage a={a} />
                 <div className="act-body">
                   <div className="act-top">
-                    <span className="time">{a.time}</span>
+                    <span className="time">
+                      <Clock size={14} /> {a.time}
+                    </span>
                     <span className={`tag tag-${a.type}`}>{TYPE_LABEL[a.type] || a.type}</span>
                   </div>
                   <h3>{a.title}</h3>
@@ -196,8 +206,8 @@ export default function TripView() {
                     {a.location && (
                       <>
                         {" · "}
-                        <a href={placeUrl(a, trip.destination)} target="_blank" rel="noreferrer">
-                          Map
+                        <a href={placeUrl(a, trip.destination)} target="_blank" rel="noreferrer" className="maplink">
+                          <MapPin size={13} /> Map
                         </a>
                       </>
                     )}
@@ -213,11 +223,11 @@ export default function TripView() {
                       />
                     </label>
                     <button className="btn btn-ghost btn-sm" onClick={() => removeActivity(day.day, i)}>
-                      Remove
+                      <Trash2 size={14} /> Remove
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
             {day.activities.length === 0 && <p className="muted">No activities left. Try regenerating this day.</p>}
           </div>
@@ -230,6 +240,7 @@ export default function TripView() {
               onChange={(e) => setInstruction(e.target.value)}
             />
             <button className="btn btn-primary" disabled={busyDay !== null} onClick={() => regen(day.day)}>
+              <RefreshCw size={16} className={busyDay === day.day ? "spin" : ""} />
               {busyDay === day.day ? "Regenerating..." : `Regenerate Day ${day.day}`}
             </button>
           </div>
@@ -275,7 +286,7 @@ export default function TripView() {
                 <p className="muted small">Anyone with this link can view (not edit) this trip.</p>
                 <div className="side-actions">
                   <button className="btn btn-primary btn-sm" onClick={copyLink}>
-                    {copied ? "Copied!" : "Copy link"}
+                    <Copy size={14} /> {copied ? "Copied!" : "Copy link"}
                   </button>
                   <button className="btn btn-ghost btn-sm" onClick={toggleShare}>
                     Stop sharing
@@ -284,17 +295,17 @@ export default function TripView() {
               </>
             ) : (
               <button className="btn btn-ghost btn-sm" onClick={toggleShare}>
-                Create share link
+                <Share2 size={14} /> Create share link
               </button>
             )}
           </div>
 
           <div className="side-actions">
             <button className="btn btn-ghost btn-sm" onClick={() => window.print()}>
-              Print / save PDF
+              <Printer size={14} /> Print / save PDF
             </button>
             <button className="btn btn-ghost btn-sm danger" onClick={removeTrip}>
-              Delete trip
+              <Trash2 size={14} /> Delete trip
             </button>
           </div>
         </aside>

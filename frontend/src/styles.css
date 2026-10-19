@@ -163,3 +163,11 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #c7c4f8; border-c
 .quotes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 34px; }
 .quotes figure { margin: 0; padding: 20px; border-radius: var(--radius); background: linear-gradient(135deg, #eef2ff, #fdf2f8); }
 .quotes blockquote { margin: 0 0 10px; font-style: italic; } .quotes figcaption { font-size: .85rem; color: var(--muted); } .quotes figcaption::before { content: "— "; }
+
+/* icons + motion */
+.navlink { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+.time { display: inline-flex; align-items: center; gap: 4px; }
+.maplink { display: inline-flex; align-items: center; gap: 3px; color: var(--brand); }
+.dest-region { display: inline-flex; align-items: center; gap: 4px; }
+.back { display: inline-flex; align-items: center; gap: 4px; }
+.spin { animation: spin 1s linear infinite; }
