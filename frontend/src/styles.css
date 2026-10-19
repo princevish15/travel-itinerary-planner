@@ -128,3 +128,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #c7c4f8; border-c
 @media (max-width: 860px) { .explore-hero h1 { font-size: 2rem; } .explore-hero { min-height: 300px; } }
 .dest-section { margin-bottom: 28px; } .dest-section-title { margin-bottom: 12px; font-size: 1.15rem; }
 .see-all { display: flex; justify-content: center; margin-top: 16px; }
+
+/* password field */
+.pw-wrap { position: relative; } .pw-wrap input { padding-right: 44px; }
+.pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; color: var(--muted); cursor: pointer; padding: 6px; display: grid; place-items: center; }
+.pw-toggle:hover { color: var(--ink); }
+.forgot { align-self: flex-end; margin-top: -8px; font-size: .85rem; }

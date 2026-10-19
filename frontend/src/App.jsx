@@ -4,6 +4,7 @@ import { supabase, supabaseConfigured } from "./lib/supabase";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Explore from "./pages/Explore";
+import ResetPassword from "./pages/ResetPassword";
 import NewTrip from "./pages/NewTrip";
 import TripView from "./pages/TripView";
 import SharedTrip from "./pages/SharedTrip";
@@ -70,6 +71,7 @@ export default function App() {
       <Route path="/share/:token" element={<SharedTrip />} />
       <Route path="/" element={guard(<Explore />)} />
       <Route path="/trips" element={guard(<Dashboard />)} />
+      <Route path="/reset" element={guard(<ResetPassword />)} />
       <Route path="/new" element={guard(<NewTrip />)} />
       <Route path="/trip/:id" element={guard(<TripView />)} />
       <Route path="*" element={<Navigate to="/" replace />} />
