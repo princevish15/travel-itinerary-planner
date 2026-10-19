@@ -126,3 +126,5 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #c7c4f8; border-c
 .dest-region { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; background: rgba(255,255,255,.22); padding: 2px 9px; border-radius: 999px; }
 .form-banner { height: 170px; border-radius: 12px; margin: -6px -6px 4px; display: flex; align-items: flex-end; padding: 14px 18px; color: #fff; font-size: 1.6rem; font-weight: 700; background: linear-gradient(135deg, #6366f1, #a855f7) center/cover; text-shadow: 0 2px 8px rgba(0,0,0,.5); }
 @media (max-width: 860px) { .explore-hero h1 { font-size: 2rem; } .explore-hero { min-height: 300px; } }
+.dest-section { margin-bottom: 28px; } .dest-section-title { margin-bottom: 12px; font-size: 1.15rem; }
+.see-all { display: flex; justify-content: center; margin-top: 16px; }

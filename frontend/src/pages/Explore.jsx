@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { DESTINATIONS, useWikiImage } from "../lib/destinations";
 
 function DestCard({ d }) {
-  const img = useWikiImage(d.wiki, 800);
+  const img = useWikiImage(d.wiki, 960);
   return (
     <Link
       className="dest"
@@ -19,18 +19,43 @@ function DestCard({ d }) {
   );
 }
 
+const LIMIT = 6;
+
+function Section({ region }) {
+  const [all, setAll] = useState(false);
+  const list = DESTINATIONS.filter((d) => d.region === region);
+  const shown = all ? list : list.slice(0, LIMIT);
+  return (
+    <section className="dest-section">
+      <h3 className="dest-section-title">{region === "India" ? "Incredible India" : "Around the world"}</h3>
+      <div className="dest-grid">
+        {shown.map((d) => (
+          <DestCard key={d.name} d={d} />
+        ))}
+      </div>
+      {list.length > LIMIT && (
+        <div className="see-all">
+          <button className="btn btn-ghost" onClick={() => setAll(!all)}>
+            {all ? "Show less" : `See all ${list.length} places`}
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default function Explore() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [region, setRegion] = useState("All");
-  const heroImg = useWikiImage("Oia,_Greece", 1600);
+  const heroImg = useWikiImage("Oia,_Greece", 1280);
 
   const go = (e) => {
     e.preventDefault();
     navigate(`/new${q.trim() ? `?dest=${encodeURIComponent(q.trim())}` : ""}`);
   };
 
-  const list = DESTINATIONS.filter((d) => region === "All" || d.region === region);
+  const sections = ["India", "International"].filter((r) => region === "All" || region === r);
 
   return (
     <>
@@ -59,11 +84,9 @@ export default function Explore() {
         </div>
       </div>
 
-      <div className="dest-grid">
-        {list.map((d) => (
-          <DestCard key={d.name} d={d} />
-        ))}
-      </div>
+      {sections.map((r) => (
+        <Section key={r} region={r} />
+      ))}
     </>
   );
 }

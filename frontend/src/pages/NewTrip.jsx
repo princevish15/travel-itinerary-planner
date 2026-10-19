@@ -29,7 +29,7 @@ export default function NewTrip() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const known = DESTINATIONS.find((d) => d.query === params.get("dest"));
-  const photo = useWikiImage(known?.wiki, 1400);
+  const photo = useWikiImage(known?.wiki, 1280);
   const [f, setF] = useState({
     destination: params.get("dest") || "",
     start_date: today,
